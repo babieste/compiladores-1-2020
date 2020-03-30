@@ -9,6 +9,7 @@
 #define IDENTIFIER "IDENTIFIER"
 #define BOOLEAN "BOOLEAN"
 #define OPERATOR "OPERATOR"
+#define DELIMITER "DELIMITER"
 
 
 FILE *saida;
@@ -51,6 +52,11 @@ char * scanner(char string[], int *pointer) {
 		if(string[*pointer] == '>') goto q79;
 		if(string[*pointer] == '=') goto q85;
 		if(string[*pointer] == '!') goto q87;
+		if(string[*pointer] == '(') goto q92;
+		if(string[*pointer] == ')') goto q94;
+		if(string[*pointer] == ',') goto q96;
+		if(string[*pointer] == ';') goto q98;
+		if(string[*pointer] == '.') goto q100;
 		else goto final;
 		
 	q1:
@@ -116,8 +122,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 
 	q11: //Palavra reservada "senao" encontrada'
-		printf("\nEntered q11 state. Found reserved word \'senao\',");
-		printf("\nToken: ");
+		printf("\nEntered q11 state. Found reserved word \'senao\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, RESERVED_WORD);
 
 	q12:
@@ -146,8 +151,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q16: //Palavra reservada "se" encontrada
-		printf("\nEntered q16 state. Found reserved word \'se\'.");
-		printf("\nToken: ");
+		printf("\nEntered q16 state. Found reserved word \'se\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, RESERVED_WORD);
 		(*pointer)++;
 		goto final;
@@ -177,8 +181,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q21: //Palavra reservada "bool" encontrada
-		printf("\nEntered q21 state. Found reserved word \'bool\'.");
-		printf("\nToken: ");
+		printf("\nEntered q21 state. Found reserved word \'bool\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, RESERVED_WORD);
 		(*pointer)++;
 		goto final;
@@ -202,8 +205,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q25: //Palavra reservada "int" encontrada
-		printf("\nEntered q25 state. Found reserved word \'int\'.");
-		printf("\nToken: ");
+		printf("\nEntered q25 state. Found reserved word \'int\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, RESERVED_WORD);
 		(*pointer)++;
 		goto final;
@@ -252,15 +254,13 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q33: //Palava reservada "escreva" encontrada.
-		printf("\nEntered q33 state. Found reserved word \'escreva\'.");
-		printf("\nToken: ");
+		printf("\nEntered q33 state. Found reserved word \'escreva\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, RESERVED_WORD);
 		(*pointer)++;
 		goto final;
 
  	q34: //Booleano t encontrado
-		printf("\nEntered q34 state. Found f boolean value.");
-		printf("\nToken: ");
+		printf("\nEntered q34 state. Found f boolean value.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, BOOLEAN);
 		(*pointer)++;
 		goto final;
@@ -290,8 +290,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q39: //Palavra reservada "fimse" encontrada
-		printf("\nEntered q39 state. Found reserved word \'fimse\'.");
-		printf("\nToken: ");
+		printf("\nEntered q39 state. Found reserved word \'fimse\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, RESERVED_WORD);
 		(*pointer)++;
 		goto final;
@@ -333,8 +332,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q46: //Palava reservada "repita" encontrada
-		printf("\nEntered q46 state. Found reserved word \'repita\'.");
-		printf("\nToken: ");
+		printf("\nEntered q46 state. Found reserved word \'repita\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, RESERVED_WORD);
 		(*pointer)++;
 		goto final;
@@ -346,8 +344,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q48: //Palavra reservada "proc" encontrada
-		printf("\nEntered q48 state. Found reserved word \'proc\'.");
-		printf("\nToken: ");
+		printf("\nEntered q48 state. Found reserved word \'proc\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, RESERVED_WORD);
 		(*pointer)++;
 		goto final;
@@ -364,22 +361,19 @@ char * scanner(char string[], int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q51;
 		
 	q51: //Palava reservada "entao" encontrada
-		printf("\nEntered q51 state. Found reserved word \'entao\'.");
-		printf("\nToken: ");
+		printf("\nEntered q51 state. Found reserved word \'entao\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, RESERVED_WORD);
 		(*pointer)++;
 		goto final;
 
 	q01: //Booleano t encontrado
-		printf("\nEntered q01 state. Found t boolean value.");
-		printf("\nToken: ");
+		printf("\nEntered q01 state. Found t boolean value.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, BOOLEAN);
 		(*pointer)++;
 		goto final;
 		
 	q60: //Palavra reservada "prog" encontrada
-		printf("\nEntered q60 state. Found reserved word \'prog\'.");
-		printf("\nToken: ");
+		printf("\nEntered q60 state. Found reserved word \'prog\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, RESERVED_WORD);
 		(*pointer)++;
 		goto final;
@@ -398,8 +392,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 
 	q63: //Variável válida encontrada
-		printf("\nEntered q63 state. Found valid variable name.");
-		printf("\nToken: ");
+		printf("\nEntered q63 state. Found valid variable name.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, IDENTIFIER);
 		(*pointer)++;
 		goto final;
@@ -411,8 +404,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q71: //Operador "+" encontrado
-		printf("\nEntered q71 state. Found operator \'+\'.");
-		printf("\nToken: ");
+		printf("\nEntered q71 state. Found operator \'+\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, OPERATOR);
 		(*pointer)++;
 		goto final;
@@ -424,8 +416,7 @@ char * scanner(char string[], int *pointer) {
 		goto final;
 		
  	q73: //Operador "-" encontrado
-		printf("\nEntered q73 state. Found operator \'-\'.");
-		printf("\nToken: ");
+		printf("\nEntered q73 state. Found operator \'-\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, OPERATOR);
 		(*pointer)++;
 		goto final;
@@ -437,8 +428,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q76: //Operador "*" encontrado
-		printf("\nEntered q76 state. Found operator \'*\'.");
-		printf("\nToken: ");
+		printf("\nEntered q76 state. Found operator \'*\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, OPERATOR);
 		(*pointer)++;
 		goto final;
@@ -451,8 +441,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q78: //Operador "<" encontrado
-		printf("\nEntered q78 state. Found operator \'<\'.");
-		printf("\nToken: ");
+		printf("\nEntered q78 state. Found operator \'<\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, OPERATOR);
 		(*pointer)++;
 		goto final;
@@ -464,8 +453,7 @@ char * scanner(char string[], int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q80;
 		
 	q80: //Operador ">" encontrado
-		printf("\nEntered q80 state. Found operator \'>\'.");
-		printf("\nToken: ");
+		printf("\nEntered q80 state. Found operator \'>\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, OPERATOR);
 		(*pointer)++;
 		goto final;
@@ -477,8 +465,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q82: //Operador "<=" encontrado
-		printf("\nEntered q82 state. Found operator \'<=\'.");
-		printf("\nToken: ");
+		printf("\nEntered q82 state. Found operator \'<=\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, OPERATOR);
 		(*pointer)++;
 		goto final;
@@ -490,8 +477,7 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q84: //Operador ">=" encontrado
-		printf("\nEntered q84 state. Found operator \'>=\'.");
-		printf("\nToken: ");
+		printf("\nEntered q84 state. Found operator \'>=\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, OPERATOR);
 		(*pointer)++;
 		goto final;
@@ -503,8 +489,7 @@ char * scanner(char string[], int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q86;
 		
 	q86: //Operador "=" encontrado
-		printf("\nEntered q86 state. Found operator \'=\'.");
-		printf("\nToken: ");
+		printf("\nEntered q86 state. Found operator \'=\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, OPERATOR);
 		(*pointer)++;
 		goto final;
@@ -528,16 +513,74 @@ char * scanner(char string[], int *pointer) {
 		else goto final;
 		
 	q90: //Operador "==" encontrado
-		printf("\nEntered q90 state. Found operator \'==\'.");
-		printf("\nToken: ");
+		printf("\nEntered q90 state. Found operator \'==\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, OPERATOR);
 		(*pointer)++;
 		goto final;
 		
 	q91: //Operador "!=" encontrado
-		printf("\nEntered q91 state. Found operator \'!=\'.");
-		printf("\nToken: ");
+		printf("\nEntered q91 state. Found operator \'!=\'.\nToken: ");
 		writeLexicalItem(initial_pointer, *pointer, string, OPERATOR);
+		(*pointer)++;
+		goto final;
+		
+	q92:
+		printf("\nEntered q92 state");
+		(*pointer)++;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q93;
+		else goto final;
+		
+	q93: //Delimitador "(" encontrado
+		printf("\nEntered q93 state. Found delimiter \'(\'.\nToken: ");
+		writeLexicalItem(initial_pointer, *pointer, string, DELIMITER);
+		(*pointer)++;
+		goto final;
+		
+	q94:
+		printf("\nEntered q94 state");
+		(*pointer)++;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q95;
+		else goto final;
+		
+	q95: //Delimitador ")" encontrado
+		printf("\nEntered q95 state. Found delimiter \')\'.\nToken: ");
+		writeLexicalItem(initial_pointer, *pointer, string, DELIMITER);
+		(*pointer)++;
+		goto final;
+		
+	q96:
+		printf("\nEntered q96 state");
+		(*pointer)++;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q97;
+		else goto final;
+		
+	q97: //Delimitador "," encontrado
+		printf("\nEntered q97 state. Found delimiter \',\'.\nToken: ");
+		writeLexicalItem(initial_pointer, *pointer, string, DELIMITER);
+		(*pointer)++;
+		goto final;
+		
+	q98:
+		printf("\nEntered q98 state");
+		(*pointer)++;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q99;
+		else goto final;
+		
+	q99: //Delimitador ";" encontrado
+		printf("\nEntered q99 state. Found delimiter \';\'.\nToken: ");
+		writeLexicalItem(initial_pointer, *pointer, string, DELIMITER);
+		(*pointer)++;
+		goto final;
+		
+	q100:
+		printf("\nEntered q100 state");
+		(*pointer)++;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q101;
+		else goto final;
+		
+	q101: //Delimitador "." encontrado
+		printf("\nEntered q101 state. Found delimiter \'.\'.\nToken: ");
+		writeLexicalItem(initial_pointer, *pointer, string, DELIMITER);
 		(*pointer)++;
 		goto final;
 		
