@@ -10,10 +10,10 @@
 #define BOOLEAN "BOOLEAN"
 #define OPERATOR "OPERATOR"
 #define DELIMITER "DELIMITER"
-
+#define INT "INT"
+#define FLOAT "FLOAT"
 
 FILE *saida;
-
 
 void writeLexicalItem(int initial, int final, char *string, char* type) {
 	int i = initial;
@@ -57,6 +57,7 @@ char * scanner(char string[], int *pointer) {
 		if(string[*pointer] == ',') goto q96;
 		if(string[*pointer] == ';') goto q98;
 		if(string[*pointer] == '.') goto q100;
+		if(isdigit(string[*pointer])) goto q110;
 		else goto final;
 		
 	q1:
@@ -401,6 +402,7 @@ char * scanner(char string[], int *pointer) {
 		printf("\nEntered q70 state");
 		(*pointer)++;
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q71;
+		if(isdigit(string[*pointer])) goto q102;
 		else goto final;
 		
 	q71: //Operador "+" encontrado
@@ -412,6 +414,7 @@ char * scanner(char string[], int *pointer) {
 	q72:
 		printf("\nEntered q72 state");
 		(*pointer)++;
+		if(isdigit(string[*pointer])) goto q106;
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q73;
 		goto final;
 		
@@ -584,6 +587,86 @@ char * scanner(char string[], int *pointer) {
 		(*pointer)++;
 		goto final;
 		
+	q102:
+		printf("\nEntered q102 state");
+		(*pointer)++;
+		if(isdigit(string[*pointer])) goto q102;
+		if(string[*pointer] == '.') goto q104;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q103;
+		
+	q103: //Número inteiro positivo encontrado
+		printf("\nEntered q103 state. Found valid positive integer.\nToken: ");
+		writeLexicalItem(initial_pointer, *pointer, string, INT);
+		(*pointer)++;
+		goto final;
+		
+	q104:
+		printf("\nEntered q104 state");
+		(*pointer)++;
+		if(isdigit(string[*pointer])) goto q104;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q105;
+		else goto final;
+		
+	q105: //Número decimal positivo encontrado
+		printf("\nEntered q105 state. Found valid positive float.\nToken: ");
+		writeLexicalItem(initial_pointer, *pointer, string, FLOAT);
+		(*pointer)++;
+		goto final;
+		
+	q106:
+		printf("\nEntered q106 state");
+		(*pointer)++;
+		if(isdigit(string[*pointer])) goto q106;
+		if(string[*pointer] == '.') goto q108;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q107;
+		else goto final;
+		
+	q107: //Número inteiro negativo encontrado
+		printf("\nEntered q107 state. Found valid negative integer.\nToken: ");
+		writeLexicalItem(initial_pointer, *pointer, string, INT);
+		(*pointer)++;
+		goto final;
+		
+	q108:
+		printf("\nEntered q108 state");
+		(*pointer)++;
+		if(isdigit(string[*pointer])) goto q108;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q109;
+		else goto final;
+		
+	q109: //Número decimal negativo encontrado
+		printf("\nEntered q109 state. Found valid negative float.\nToken: ");
+		writeLexicalItem(initial_pointer, *pointer, string, FLOAT);
+		(*pointer)++;
+		goto final;
+		
+	q110:
+		printf("\nEntered q110 state");
+		(*pointer)++;
+		if(isdigit(string[*pointer])) goto q110;
+		if(string[*pointer] == '.') goto q112;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q111;
+		else goto final;
+		
+	q111: //Número inteiro sem sinal encontrado
+		printf("\nEntered q111 state. Found valid unsigned integer.\nToken: ");
+		writeLexicalItem(initial_pointer, *pointer, string, INT);
+		(*pointer)++;
+		goto final;
+		
+	q112:
+		printf("\nEntered q112 state");
+		(*pointer)++;
+		if(isdigit(string[*pointer])) goto q112;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q113;
+		else goto final;
+		
+	q113: //Número decimal sem sinal encontrado
+		printf("\nEntered q113 state. Found valid unsigned float.\nToken: ");
+		writeLexicalItem(initial_pointer, *pointer, string, FLOAT);
+		(*pointer)++;
+		goto final;
+
 	final:
 		printf("\nFinished scanning.");
 }
