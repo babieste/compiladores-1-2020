@@ -1,0 +1,28 @@
+/*
+ * comentario
+ */ 
+progr _correto 
+    int  _a , _b , _c ;
+    bool _d , _e , _f ;
+
+    _a = 2 ;       /* comentario */ 
+    _b = 10 ; 
+    _c = 11 ; 
+    _a = _b + _c ; 
+    _d = v ; 
+    _e = f ; 
+    _f = v ; 
+    escreva ( _b ) ; 
+    se ( _d ) entao 
+	_a = 20 ; 
+	_b = 10 * _c ; 
+	_c = _a / _b ; 
+    fimse ; 
+    repita 
+	se ( _b > 10 ) entao 
+	    _b = 2 ; 
+	senao 
+	    _a = _a - 1 ; 
+	fimse ; 
+    ateque ( _a <= 1 ) ; 
+fim .

@@ -4,7 +4,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MAX_LENGTH 100
 #define RESERVED_WORD "RESERVED_WORD"
 #define IDENTIFIER "IDENTIFIER"
 #define BOOLEAN "BOOLEAN"
@@ -339,7 +338,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q63;
 		else goto final;
 
-	q63: //Vari�vel v�lida encontrada
+	q63: //Variavel valida encontrada
 		writeLexicalItem(*initial_pointer, *pointer, string, IDENTIFIER);
 		(*pointer)++;
 		goto final;
@@ -565,7 +564,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q107;
 		else goto final;
 		
-	q107: //N�mero inteiro negativo encontrado
+	q107: //Numero inteiro negativo encontrado
 		writeLexicalItem(*initial_pointer, *pointer, string, INT);
 		(*pointer)++;
 		goto final;
@@ -576,7 +575,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q109;
 		else goto final;
 		
-	q109: //N�mero decimal negativo encontrado
+	q109: //Numero decimal negativo encontrado
 		writeLexicalItem(*initial_pointer, *pointer, string, FLOAT);
 		(*pointer)++;
 		goto final;
@@ -588,7 +587,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q111;
 		else goto final;
 		
-	q111: //N�mero inteiro sem sinal encontrado
+	q111: //Numero inteiro sem sinal encontrado
 		writeLexicalItem(*initial_pointer, *pointer, string, INT);
 		(*pointer)++;
 		goto final;
@@ -599,7 +598,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q113;
 		else goto final;
 		
-	q113: //N�mero decimal sem sinal encontrado
+	q113: //Numero decimal sem sinal encontrado
 		writeLexicalItem(*initial_pointer, *pointer, string, FLOAT);
 		(*pointer)++;
 		goto final;
@@ -610,23 +609,23 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 
 int main() {
 	FILE * entrada;
-	if ((entrada = fopen("entrada2.txt", "r")) == NULL) {
+	if ((entrada = fopen("entrada.txt", "r")) == NULL) {
 		printf("\nError while opening program file");
 		return 1;
 	}
 
-	if((saida = fopen("saida.txt", "wt")) == NULL) {
+	if((saida = fopen("saida.txt", "w")) == NULL) {
 		printf("\nError while opening lexical items file.");
 		return 1;
 	}
 	char word[255];
-	char string[1000];
+	char string[10000];
 	int initial_pointer = 0, pointer = 0;
 
 	while(!feof(entrada)) {
 		fscanf(entrada, "%s", word);
-		strcat(string, " ");
 		strcat(string, word);
+		strcat(string, " ");
 	}
 
 	printf("\n%s", string);
