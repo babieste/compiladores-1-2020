@@ -34,6 +34,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 	goto q0;
 
 	q0: //Estado inicial
+		printf("\nEntered q0 state");
 		if(string[*pointer] == 't') goto q1;
 		if(string[*pointer] == 'f') goto q2;
 		if(string[*pointer] == 'p') goto q3;
@@ -338,7 +339,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q63;
 		else goto final;
 
-	q63: //Variável válida encontrada
+	q63: //Variï¿½vel vï¿½lida encontrada
 		writeLexicalItem(*initial_pointer, *pointer, string, IDENTIFIER);
 		(*pointer)++;
 		goto final;
@@ -367,7 +368,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q69;
 		else goto final;
 		
-	q69: //Comentário válido encontrado
+	q69: //Comentï¿½rio vï¿½lido encontrado
 		writeLexicalItem(*initial_pointer, *pointer, string, COMMENT);
 		(*pointer)++;
 		goto final;
@@ -541,7 +542,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(string[*pointer] == '.') goto q104;
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q103;
 		
-	q103: //Número inteiro positivo encontrado
+	q103: //Nï¿½mero inteiro positivo encontrado
 		writeLexicalItem(*initial_pointer, *pointer, string, INT);
 		(*pointer)++;
 		goto final;
@@ -552,7 +553,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q105;
 		else goto final;
 		
-	q105: //Número decimal positivo encontrado
+	q105: //Nï¿½mero decimal positivo encontrado
 		writeLexicalItem(*initial_pointer, *pointer, string, FLOAT);
 		(*pointer)++;
 		goto final;
@@ -564,7 +565,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q107;
 		else goto final;
 		
-	q107: //Número inteiro negativo encontrado
+	q107: //Nï¿½mero inteiro negativo encontrado
 		writeLexicalItem(*initial_pointer, *pointer, string, INT);
 		(*pointer)++;
 		goto final;
@@ -575,7 +576,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q109;
 		else goto final;
 		
-	q109: //Número decimal negativo encontrado
+	q109: //Nï¿½mero decimal negativo encontrado
 		writeLexicalItem(*initial_pointer, *pointer, string, FLOAT);
 		(*pointer)++;
 		goto final;
@@ -587,7 +588,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q111;
 		else goto final;
 		
-	q111: //Número inteiro sem sinal encontrado
+	q111: //Nï¿½mero inteiro sem sinal encontrado
 		writeLexicalItem(*initial_pointer, *pointer, string, INT);
 		(*pointer)++;
 		goto final;
@@ -598,7 +599,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q113;
 		else goto final;
 		
-	q113: //Número decimal sem sinal encontrado
+	q113: //Nï¿½mero decimal sem sinal encontrado
 		writeLexicalItem(*initial_pointer, *pointer, string, FLOAT);
 		(*pointer)++;
 		goto final;
@@ -608,16 +609,32 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 }
 
 int main() {
+	FILE * entrada;
+	if ((entrada = fopen("entrada2.txt", "r")) == NULL) {
+		printf("\nError while opening program file");
+		return 1;
+	}
+
 	if((saida = fopen("saida.txt", "wt")) == NULL) {
 		printf("\nError while opening lexical items file.");
 		return 1;
 	}
-	char string[] = "12 , ( se _cv ";
+	char word[255];
+	char string[1000];
 	int initial_pointer = 0, pointer = 0;
+
+	while(!feof(entrada)) {
+		fscanf(entrada, "%s", word);
+		strcat(string, " ");
+		strcat(string, word);
+	}
+
+	printf("\n%s", string);
 
 	do {
 		scanner(string, &initial_pointer, &pointer);
 	} while(initial_pointer < pointer);
 
+	fclose(entrada);
 	fclose(saida);
 }
