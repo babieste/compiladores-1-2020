@@ -16,13 +16,16 @@
 
 FILE *lexical_tokens;
 
+/*
+	Gets token type and value from lexical_tokens.txt file,
+	in which tokens are written in the format: "<TOKEN_TYPE, TOKEN_VALUE>"
+*/
 void getToken(char *token_type, char *token_value) {
-	// Tokens are written in the format: "<TOKEN_TYPE, TOKEN_VALUE>"
 	int i = 1; //Skips "<"
 	char *token_variable;
 	fgets(token_variable, 255, lexical_tokens);
-	
-	//Cleans trash if any
+
+	//Cleans trash from memory if any
 	memset(token_value, 0, 255);
 	memset(token_type, 0, 255);
 
@@ -30,17 +33,22 @@ void getToken(char *token_type, char *token_value) {
 		strncat(token_type, &token_variable[i], 1);
 		i++;
 	}
-	
-	printf("\ntoken_type: %s", token_type);
+
+	i++; //Skips ","
 	i++; //Skips " "
 	
 	while (token_variable[i] != '>') {
 		strncat(token_value, &token_variable[i], 1);
 		i++;
 	}
-	printf("\ntoken_value: %s", token_value);
+
+	printf("\nFrom lexical tokens file: token type: \"%s\", token value: \"%s\".", token_type, token_value);
 }
 
+/*
+	Checks not only token value, but also it's type.
+	Returns 1 if it's a match, 0 otherwise.
+*/
 int match(char token_type[], char token_value[]) {
 	char lookahead[255], lookahead_type[255];
 	getToken(lookahead_type, lookahead);
@@ -48,17 +56,17 @@ int match(char token_type[], char token_value[]) {
 	if(strcmp(token_type, IDENTIFIER) == 0)
 		return 1;
 
-	if ((strcmp(lookahead, token_value) == 0) && (strcmp(lookahead_type, token_type)))
+	if ((strcmp(lookahead, token_value) == 0) && (strcmp(lookahead_type, token_type) == 0))
 		return 1;
 	return 0;
 }
 
 /* <programa> ::= prog <identificador> <bloco> fim . */
-//int programa() {
-//	if (match(RESERVED_WORD,"prog") && identificador() && bloco() && match(RESERVED_WORD,"fim") && match(DELIMITER,"."))
-//		return 1;
-//	return 0;
-//}
+int programa() {
+	if (match(RESERVED_WORD,"prog") && identificador() && bloco() && match(RESERVED_WORD,"fim") && match(DELIMITER,"."))
+		return 1;
+	return 0;
+}
 
 /* <identificador> ::= id*/
 int identificador() {
@@ -67,11 +75,23 @@ int identificador() {
 	return 0;
 }
 
-/* <declaracao_variavel> ::= (int | bool) <identificador> ; */
-int declaracaoVariaveis() {
-	if ((match(RESERVED_WORD, "int") || match(RESERVED_WORD, "boolean")) && identificador() && match(DELIMITER, ";"))
+/* <bloco> ::= [ <parte declaracao de variaveis> ] <comando composto> */
+int bloco() {
+	if(/*parte declaracao de variaveis &&*/ comandoComposto())
 		return 1;
 	return 0;
+}
+
+/* <comando compost> ::= <comando> ; { <comando> ; }*/
+int comandoComposto() {
+	if(comando() /*&& repeticao de comando*/)
+		return 1;
+	return 0;
+}
+
+/* <comando> ::= <atribuição> | <comando condicional> | <comando repetitivo> | escreva ( <identificador> ) */
+int comando() {
+	//...
 }
 
 void writeLexicalItem(int initial, int final, char *string, char* type) {
@@ -667,7 +687,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 
 int main() {
 	FILE * entrada;
-	if ((entrada = fopen("entrada2.txt", "r")) == NULL) {
+	if ((entrada = fopen("entrada.txt", "r")) == NULL) {
 		printf("\nError while opening program file");
 		return 1;
 	}
@@ -676,6 +696,7 @@ int main() {
 		printf("\nError while opening lexical tokens file.");
 		return 1;
 	}
+
 	char word[255], token_type[255], token_value[255];
 	char string[10000];
 	int initial_pointer = 0, pointer = 0;
@@ -694,9 +715,8 @@ int main() {
 	} while(initial_pointer < pointer);
 
 	fseek(lexical_tokens, 0, SEEK_SET);
-	
-//	getToken(token_type, token_value);
-	if(declaracaoVariaveis()) {
+
+	if(programa()) {
 		printf("\nReconhecido!");
 	} else {
 		printf("\nNao foi reconhecido!");
