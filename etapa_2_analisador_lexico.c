@@ -240,6 +240,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		
 	q36:
 		(*pointer)++;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q114;
 		if(string[*pointer] == 's') goto q37;
 		else goto final;
 		
@@ -600,6 +601,11 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		
 	q113: //Numero decimal sem sinal encontrado
 		writeLexicalItem(*initial_pointer, *pointer, string, FLOAT);
+		(*pointer)++;
+		goto final;
+		
+	q114: //Palavra reservada "fim" encontrada
+		writeLexicalItem(*initial_pointer, *pointer, string, RESERVED_WORD);
 		(*pointer)++;
 		goto final;
 
