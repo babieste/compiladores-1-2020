@@ -166,6 +166,18 @@ int comando() {
 		if (atribuicao())
 			return 1;
 		return 0;
+	} else if ((strcmp(lookahead_type, RESERVED_WORD) == 0) && (strcmp(lookahead_value, "se") == 0)) {
+		if (comandoCondicional())
+			return 1;
+		return 0;
+	} else if ((strcmp(lookahead_type, RESERVED_WORD) == 0) && (strcmp(lookahead_value, "repita") == 0)) {
+		if (comandoRepetitivo())
+			return 1;
+		return 0;
+	} else if ((strcmp(lookahead_type, RESERVED_WORD) == 0) && (strcmp(lookahead_value, "escreva") == 0)) {
+		if (match(RESERVED_WORD, "escreva") && match(DELIMITER, "(") && identificador() && match(DELIMITER, ")"))
+			return 1;
+		return 0;
 	}
 	return 0;
 }
@@ -173,6 +185,22 @@ int comando() {
 /* <atribuicao> ::= <variavel> = <expressao> */
 int atribuicao() {
 	if(variavel() && match(OPERATOR, "=") && expressao())
+		return 1;
+	return 0;
+}
+
+/* <comando condicional> ::= se ( <expressao> ) entao <comando composto> [ senao <comando composto> ] fimse */
+int comandoCondicional() {
+	if (match(RESERVED_WORD, "se") && match(DELIMITER, "(") && expressao() && match(DELIMITER, ")") && comandoComposto() && match(RESERVED_WORD, "fimse")) {
+		// Verificar comando composto de senao
+		return 1;
+	}
+	return 0;
+}
+
+/* <comando repetitivo> ::= repita <comando composto> ateque ( <expressao> ) */
+int comandoRepetitivo() {
+	if (match(RESERVED_WORD, "repita") && comandoComposto() && match(RESERVED_WORD, "ateque") && match(DELIMITER, "(") && expressao() && match(DELIMITER, ")"))
 		return 1;
 	return 0;
 }
@@ -227,7 +255,12 @@ int expressaoSimples() {
 /* <termo> ::= <fator> { ( * | / ) <fator> } */
 int termo() {
 	if (fator()) {
-		//verificar p/ mais fatores
+		if ((strcmp(lookahead_type, OPERATOR) == 0) && ((strcmp(lookahead_value, "*") == 0) || (strcmp(lookahead_value, "/") == 0))) {
+			if ((match(OPERATOR, "*") || match(OPERATOR, "/")) && fator()) {
+				return 1;
+			}
+			return 0;
+		}
 		return 1;
 	}
 	return 0;
@@ -247,8 +280,10 @@ int fator() {
 		if(boolean())
 			return 1;
 		return 0;
+	} else if (match(DELIMITER, "(") && expressaoSimples() && match(DELIMITER, ")")) {
+		return 1;
 	}
-	// verificar expressao simples
+	return 0;
 }
 
 /* <numero> ::= num*/
@@ -319,6 +354,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(string[*pointer] == ';') goto q98;
 		if(string[*pointer] == '.') goto q100;
 		if(isdigit(string[*pointer])) goto q110;
+		if(string[*pointer] == 'a') goto q115;
 		else goto final;
 
 	q1:
@@ -502,6 +538,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 
 	q36:
 		(*pointer)++;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q114;
 		if(string[*pointer] == 's') goto q37;
 		else goto final;
 
@@ -865,6 +902,46 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		(*pointer)++;
 		goto final;
 
+	q114: //Palavra reservada "fim" encontrada
+		writeLexicalItem(*initial_pointer, *pointer, string, RESERVED_WORD);
+		(*pointer)++;
+		goto final;
+		
+ 	q115:
+		(*pointer)++;
+		if(string[*pointer] == 't') goto q116;
+		else goto final;
+
+	q116:
+		(*pointer)++;
+		if(string[*pointer] == 'e') goto q117;
+		else goto final;
+
+	q117:
+		(*pointer)++;
+		if (string[*pointer] == 'q') goto q118;
+		else goto final;
+
+	q118:
+		(*pointer)++;
+		if (string[*pointer] == 'u') goto q119;
+		else goto final;
+
+	q119:
+		(*pointer)++;
+		if (string[*pointer] == 'e') goto q120;
+		else goto final;
+
+	q120:
+		(*pointer)++;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q121;
+		else goto final;
+
+	q121: //Palavra reservada "ateque" encontrada
+		writeLexicalItem(*initial_pointer, *pointer, string, RESERVED_WORD);
+		(*pointer)++;
+		goto final;
+
 	final:
 		printf("");
 }
@@ -891,7 +968,7 @@ int main() {
 		strcat(string, " ");
 	}
 
-	printf("\n%s", string);
+	printf("\nEntrada: \n%s\n\n\n", string);
 
 	//Get lexical items from program
 	do {
@@ -903,9 +980,13 @@ int main() {
 	getToken(lookahead_type, lookahead_value);
 
 	if(programa()) {
-		printf("\nReconhecido!");
+		printf("\n\n\n\n\n\n--------------------------------------");
+		printf("\n\tEntrada reconhecida!");
+		printf("\n--------------------------------------");
 	} else {
-		printf("\nNao foi reconhecido!");
+		printf("\n\n\n\n\n\n--------------------------------------");
+		printf("\n\tNao foi reconhecido!");
+		printf("\n--------------------------------------");
 	}
 
 	fclose(entrada);

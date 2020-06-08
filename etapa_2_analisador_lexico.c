@@ -57,6 +57,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		if(string[*pointer] == ';') goto q98;
 		if(string[*pointer] == '.') goto q100;
 		if(isdigit(string[*pointer])) goto q110;
+		if(string[*pointer] == 'a') goto q115;
 		else goto final;
 		
 	q1:
@@ -608,6 +609,41 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 		writeLexicalItem(*initial_pointer, *pointer, string, RESERVED_WORD);
 		(*pointer)++;
 		goto final;
+		
+	q115:
+		(*pointer)++;
+		if(string[*pointer] == 't') goto q116;
+		else goto final;
+
+	q116:
+		(*pointer)++;
+		if(string[*pointer] == 'e') goto q117;
+		else goto final;
+		
+	q117:
+		(*pointer)++;
+		if (string[*pointer] == 'q') goto q118;
+		else goto final;
+		
+	q118:
+		(*pointer)++;
+		if (string[*pointer] == 'u') goto q119;
+		else goto final;
+		
+	q119:
+		(*pointer)++;
+		if (string[*pointer] == 'e') goto q120;
+		else goto final;
+		
+	q120:
+		(*pointer)++;
+		if(isspace(string[*pointer]) || (string[*pointer] == '\0')) goto q121;
+		else goto final;
+		
+	q121: //Palavra reservada "ateque" encontrada
+		writeLexicalItem(*initial_pointer, *pointer, string, RESERVED_WORD);
+		(*pointer)++;
+		goto final;
 
 	final:
 		printf("\nFinished scanning.");
@@ -615,7 +651,7 @@ char *scanner(char string[],int *initial_pointer, int *pointer) {
 
 int main() {
 	FILE * entrada;
-	if ((entrada = fopen("entrada.txt", "r")) == NULL) {
+	if ((entrada = fopen("entrada2.txt", "r")) == NULL) {
 		printf("\nError while opening program file");
 		return 1;
 	}
