@@ -15,6 +15,7 @@
 #define COMMENT "COMMENT"
 
 FILE *lexical_tokens;
+char lookahead_value[255], lookahead_type[255];
 
 /*
 	Gets token type and value from lexical_tokens.txt file,
@@ -42,7 +43,12 @@ void getToken(char *token_type, char *token_value) {
 		i++;
 	}
 
-	printf("\nFrom lexical tokens file: token type: \"%s\", token value: \"%s\".", token_type, token_value);
+	printf("\nNew lookahead type: \"%s\", new lookahead value: \"%s\".", lookahead_type, lookahead_value);
+	if(strcmp(lookahead_type, COMMENT) == 0) {
+		printf("\nComment found! Ignoring it and proceeding to next token...");
+		// If it's a comment, ignore it, proceed to next token
+		getToken(lookahead_type, lookahead_value);
+	}
 }
 
 /*
@@ -50,20 +56,41 @@ void getToken(char *token_type, char *token_value) {
 	Returns 1 if it's a match, 0 otherwise.
 */
 int match(char token_type[], char token_value[]) {
-	char lookahead[255], lookahead_type[255];
-	getToken(lookahead_type, lookahead);
+	printf("\nTrying to match types: \"%s\" (lookahead) to \"%s\" (token), and values \"%s\" (lookahead) to \"%s\" (token)...", lookahead_type, token_type, lookahead_value, token_value);
 
-	if(strcmp(token_type, IDENTIFIER) == 0)
+	if ((strcmp(lookahead_type, IDENTIFIER) == 0) && (strcmp(token_type, IDENTIFIER) == 0)) {
+		printf("\nIt\'s a match! Updating lookahead...\n");
+		// Updates lookahead to next token
+		getToken(lookahead_type, lookahead_value);
 		return 1;
+	}
 
-	if ((strcmp(lookahead, token_value) == 0) && (strcmp(lookahead_type, token_type) == 0))
+	if ((strcmp(lookahead_type, INT) == 0) && (strcmp(token_type, INT) == 0)) {
+		printf("\nIt\'s a match! Updating lookahead...\n");
+		// Updates lookahead to next token
+		getToken(lookahead_type, lookahead_value);
 		return 1;
+	}
+
+	if ((strcmp(lookahead_type, FLOAT) == 0) && (strcmp(token_type, FLOAT) == 0)) {
+		printf("\nIt\'s a match! Updating lookahead...\n");
+		// Updates lookahead to next token
+		getToken(lookahead_type, lookahead_value);
+		return 1;
+	}
+
+	if ((strcmp(lookahead_value, token_value) == 0) && (strcmp(lookahead_type, token_type) == 0)) {
+		printf("\nIt\'s a match! Updating lookahead...\n");
+		// Updates lookahead to next token
+		getToken(lookahead_type, lookahead_value);
+		return 1;
+	}
 	return 0;
 }
 
 /* <programa> ::= prog <identificador> <bloco> fim . */
 int programa() {
-	if (match(RESERVED_WORD,"prog") && identificador() && bloco() && match(RESERVED_WORD,"fim") && match(DELIMITER,"."))
+	if (match(RESERVED_WORD,"progr") && identificador() && bloco() && match(RESERVED_WORD,"fim") && match(DELIMITER,"."))
 		return 1;
 	return 0;
 }
@@ -77,22 +104,179 @@ int identificador() {
 
 /* <bloco> ::= [ <parte declaracao de variaveis> ] <comando composto> */
 int bloco() {
-	if(/*parte declaracao de variaveis &&*/ comandoComposto())
+	// Verify if lookahead contains variable declaration
+	if ((strcmp(lookahead_type, RESERVED_WORD) == 0) && ((strcmp(lookahead_value, "int") == 0) || (strcmp(lookahead_value, "bool") == 0))) {
+		if (parteDeclaracaoVariaveis() && comandoComposto())
+			return 1;
+		return 0;
+	} else if (comandoComposto())
 		return 1;
 	return 0;
 }
 
-/* <comando compost> ::= <comando> ; { <comando> ; }*/
+/* <parte declaracoes de variaveis> ::= <declaracao de variaveis> { <declaracao variaveis> }*/
+int parteDeclaracaoVariaveis() {
+	if (declaracaoVariaveis()) {
+		if((strcmp(lookahead_type, RESERVED_WORD) == 0) && ((strcmp(lookahead_value, "int") == 0) || (strcmp(lookahead_value, "bool") == 0))) {
+			if(declaracaoVariaveis())
+				return 1;
+			return 0;
+		}
+		return 1;
+	}
+	return 0;
+}
+
+/* <declaracao variaveis> ::= ( int | bool ) <lista identificadores> ; */
+int declaracaoVariaveis() {
+	if((match(RESERVED_WORD, "int") || match(RESERVED_WORD, "bool")) && listaIdentificadores() && match(DELIMITER, ";"))
+		return 1;
+	return 0;
+}
+
+/* <lista identificadores> ::= <identificador> { , <identificador> } */
+int listaIdentificadores() {
+	if(identificador()) {
+		if ((strcmp(lookahead_type, DELIMITER) == 0) && (strcmp(lookahead_value, ",") == 0)) {
+			if(match(DELIMITER, ",") && listaIdentificadores())
+				return 1;
+			return 0;
+		}
+		return 1;
+	}
+	return 0;
+}
+
+/* <comando composto> ::= <comando> ; { <comando> ; }*/
 int comandoComposto() {
-	if(comando() /*&& repeticao de comando*/)
+	if (comando() && match(DELIMITER, ";")) {
+		if (strcmp(lookahead_type, IDENTIFIER) == 0) {
+			if (comandoComposto())
+				return 1;
+			return 0;
+		}
+		return 1;
+	}
+	return 0;
+}
+
+/* <comando> ::= <atribuicao> | <comando condicional> | <comando repetitivo> | escreva ( <identificador> ) */
+int comando() {
+	if (strcmp(lookahead_type, IDENTIFIER) == 0) {
+		if (atribuicao())
+			return 1;
+		return 0;
+	}
+	return 0;
+}
+
+/* <atribuicao> ::= <variavel> = <expressao> */
+int atribuicao() {
+	if(variavel() && match(OPERATOR, "=") && expressao())
 		return 1;
 	return 0;
 }
 
-/* <comando> ::= <atribuição> | <comando condicional> | <comando repetitivo> | escreva ( <identificador> ) */
-int comando() {
-	//...
+/* <variavel> ::= <identificador> */
+int variavel() {
+	if(identificador())
+		return 1;
+	return 0;
 }
+
+/* <expressao> ::= <expressao simples> [ <relacao> <expressao simples> ]*/
+int expressao() {
+	if (expressaoSimples()) {
+		if(
+			(strcmp(lookahead_type, OPERATOR) == 0) && (
+				(strcmp(lookahead_value, "==") == 0) ||
+				(strcmp(lookahead_value, "!=") == 0) ||
+				(strcmp(lookahead_value, "<") == 0) ||
+				(strcmp(lookahead_value, "<=") == 0) ||
+				(strcmp(lookahead_value, ">=") == 0) ||
+				(strcmp(lookahead_value, ">") == 0)
+			)
+		) {
+				if (relacao() && expressaoSimples())
+					return 1;
+				return 0;
+			}
+		return 1;
+	}
+	return 0;
+}
+
+/* <expressao simples> ::= [ + | - ] <termo> { [ + | - ] <termo> ]*/
+int expressaoSimples() {
+	if ((strcmp(lookahead_type, OPERATOR) == 0) && ((strcmp(lookahead_value, "+") == 0) || (strcmp(lookahead_value, "-") == 0))) {
+		if (match(OPERATOR, "+") || match(OPERATOR, "-"))
+			return 1;
+		return 0;
+	}
+	if (termo()) {
+		if ((strcmp(lookahead_type, OPERATOR) == 0) && ((strcmp(lookahead_value, "+") == 0) || (strcmp(lookahead_value, "-") == 0))) {
+			if ((match(OPERATOR, "+") || match(OPERATOR, "-")) && termo())
+				return 1;
+			return 0;
+		}
+		return 1;
+	}
+	return 0;
+}
+
+/* <termo> ::= <fator> { ( * | / ) <fator> } */
+int termo() {
+	if (fator()) {
+		//verificar p/ mais fatores
+		return 1;
+	}
+	return 0;
+}
+
+/* <fator> ::= <variavel> | <numero> | <boolean> | ( <expressao simples> ) */
+int fator() {
+	if (strcmp(lookahead_type, IDENTIFIER) == 0) {
+		if (match(IDENTIFIER, ""))
+			return 1;
+		return 0;
+	} else if ((strcmp(lookahead_type, INT) == 0) || (strcmp(lookahead_type, FLOAT) == 0)) {
+		if(numero())
+			return 1;
+		return 0;
+	} else if (strcmp(lookahead_type, BOOLEAN) == 0) {
+		if(boolean())
+			return 1;
+		return 0;
+	}
+	// verificar expressao simples
+}
+
+/* <numero> ::= num*/
+int numero() {
+	if (match(INT, "") || match(FLOAT, ""))
+		return 1;
+	return 0;
+}
+
+/* <boolean> ::= t | f */
+int boolean() {
+	if((match(BOOLEAN, "t") == 0) || match(BOOLEAN, "f"))
+		return 1;
+	return 0;
+}
+
+/* <relacao> ::= == | != | < | <= | >= | >*/
+int relacao() {
+	if (match(OPERATOR, "==") ||
+		match(OPERATOR, "!=") ||
+		match(OPERATOR, "<") ||
+		match(OPERATOR, "<=") ||
+		match(OPERATOR, ">=") ||
+		match(OPERATOR, ">"))
+		return 1;
+	return 0;
+}
+
 
 void writeLexicalItem(int initial, int final, char *string, char* type) {
 	int i = initial;
@@ -715,6 +899,8 @@ int main() {
 	} while(initial_pointer < pointer);
 
 	fseek(lexical_tokens, 0, SEEK_SET);
+
+	getToken(lookahead_type, lookahead_value);
 
 	if(programa()) {
 		printf("\nReconhecido!");
